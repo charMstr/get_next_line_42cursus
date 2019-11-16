@@ -6,7 +6,7 @@
 /*   By: charmstr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 13:28:41 by charmstr          #+#    #+#             */
-/*   Updated: 2019/11/16 01:02:15 by charmstr         ###   ########.fr       */
+/*   Updated: 2019/11/16 16:49:16 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,5 +35,8 @@ fd_gnl	*manage_link(int fd, fd_gnl	**list, int add);
 fd_gnl	*new_link(int fd);
 int		get_next_line(int fd, char **line);
 int		to_read_or_not_to_read(fd_gnl *fd_link, char **line);
+int		update_strings(char **line, char *parse_me, int parse_me_len, fd_gnl *link);
+int		update_line(char **line, char *str2, fd_gnl *link);
+int		update_rest(char *str, fd_gnl *link, int start);
 
 #endif

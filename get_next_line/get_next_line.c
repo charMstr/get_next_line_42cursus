@@ -1,4 +1,3 @@
-/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
@@ -6,7 +5,7 @@
 /*   By: charmstr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 13:31:16 by charmstr          #+#    #+#             */
-/*   Updated: 2019/11/16 01:19:06 by charmstr         ###   ########.fr       */
+/*   Updated: 2019/11/16 18:53:59 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +54,7 @@ fd_gnl	*manage_link(int fd, fd_gnl **list, int add)
 	{
 		extra = *tracer;
 		*tracer = extra->next;
-		if (!extra->rest):
+		if (!extra->rest)
 			free(extra->rest);
 		free(extra);
 	}
@@ -71,16 +70,19 @@ void	fd_links_print(fd_gnl *list)
 	int link;
 
 	link = 0;
-	while (list)
-	{
 		printf("in link: %d, fd is:%d\n", link, list->fd);
 		if (list->rest)
-			printf("string in fd(%d): \"%s\"\n", list->fd, list->rest);
+			printf("link->rest = \"%s\"\n", list->rest);
 		else
-			printf("no string to be printed for this fd (%d)\n", list->fd);
-		link++;
-		list = list->next;
-	}
+			printf("link->rest is a NULL pointer\n");
+		printf("len_rest is: %d\n", list->len_rest);
+		printf("len_line is: %d\n", list->len_line);
+		printf("eof is :%d\n", list->eof);
+	//while (list)
+	//{
+		//link++;
+		//list = list->next;
+	//}
 	printf("\n");
 }
 
@@ -107,19 +109,19 @@ int		get_next_line(int fd, char **line)
 
 	if (!line)
 		if (!manage_link(fd, &head, REMOVE))
-			return (0);// pourrait etre -1, ne change rien pour moi, dependra de la philosophie de la norminette...
+			return (-1);
 	if (!head)
 		if (!(head = new_link(fd)))
 			return (-1);
-	fd_link = manage_link(fd, &head, ADD);
-	result = to_read_or_not_to_read(fd_link, line);
-	if (!result)
-	{
+	if(!(fd_link = manage_link(fd, &head, ADD)))
+			return (-1);
+	fd_link->len_line = 0;
+	//fd_links_print(fd_link);
+	result = to_read_or_not_to_read(fd_link, line); //result always egale a 1-->problem
+	//fd_links_print(fd_link);
+	if (result <= 0)
 		manage_link(fd, &head, REMOVE);
-		return (result);
-	}
-	else return (result);
-	//fd_links_print(head);
+	return (result);
 }
 
 /*
@@ -133,24 +135,26 @@ int		get_next_line(int fd, char **line)
 **			1 if (fd->eof = 0 || fd->len != 0)
 */
 
-int	to_read_or_not_to_read(fd_gnl *fd_link, char **line)
+int	to_read_or_not_to_read(fd_gnl *fd_link, char **line)//le problem vient de cette fonction qui renvoie toujours 1!
 {
 	int		res;
-	int		bytes_r;
+	int		bytes_read;
 	char	buf[BUFFER_SIZE + 1];
-	int		update_result;
+	int		keep_reading;
 
-	buff[BUFFER_SIZE] = '\0';
+	keep_reading = 1;
 	if (fd_link->len_rest)
-		update_result = update_line(line, fd_link->rest, fd_link);
-	while ((bytes_r = read(fd1, buff, BUFFER_SIZE)) > 0 && update_result > 0)
+		keep_reading = update_strings(line, fd_link->rest, fd_link->len_rest, fd_link);
+	while (keep_reading > 0)
 	{
-		buf[bytes_r] = '\0';
-		if (bytes_r < BUFFER_SIZ)
+		if ((bytes_read = read(fd_link->fd, buf, BUFFER_SIZE)) == -1)
+				return (-1);
+		buf[bytes_read] = '\0';
+		if (bytes_read < BUFFER_SIZE)
 			fd_link->eof = 1;
-		update_result = update_line(line, buff, fd_link);
+		keep_reading = update_strings(line, buf, bytes_read, fd_link);
 	}
-	if (bytes_r == -1 || update_result == -1)
+	if (keep_reading < 0)
 		return (-1);
 	if (fd_link->eof && (fd_link->len_rest == 0))
 		return (0);
@@ -161,7 +165,7 @@ int	to_read_or_not_to_read(fd_gnl *fd_link, char **line)
 ** man: concatenate anything before a '\n' in string with existing line.
 **		place the rest in fd_link->rest;
 **
-** RETURN:	1 if no '\n' was found,
+** RETURN:	1 if no '\n' was found and fd_link->eof == 0
 **			1 if one was found at the very end of buff and fd_link->eof == 0
 **
 **			0 if a '\n' was found before the end of rest
@@ -170,46 +174,92 @@ int	to_read_or_not_to_read(fd_gnl *fd_link, char **line)
 **			-1 if problem occured.
 */
 
-int		update_line(char **line, char *parse_me, fd_gnl *link)
+int		update_strings(char **line, char *parse_me, int parse_me_len, fd_gnl *link)
 {
-	char	*tmp;
-	int		i;
-	int		j;
+	int start_rest;
+	int found;
 
-	j = -1;
-	i = 0;
-	tmp = *line;
-	while (parse_me[i] && parse_me[i] != '\n')
-		i++;
-	if (i) //STOP in this function. will need to do a sixth function. or a seventh thats it
+	found = 0;
+	if ((start_rest = update_line(line, parse_me, link)) == -1)
+		return (-1);
+	if (parse_me[start_rest] == '\n')
 	{
-		if (!(*line = (char *)malloc(sizeof(char) * (link->len_line + i + 1))))
-			return (-1);
-		while (++j < link->len_line)
-			line[j] = tmp[j];
-		j = -1;
-		while (++j < i - 1)
-			line[link->len_line + j] = parse_me[j];
+		start_rest++;
+		found = 1;
 	}
-	link->len_line = link->len_line + i;
-	link>rest = whats left. faire un dup de link->len_rest - la positiondu '\n' a detruire
-	link->len_rest = ...
-	if (tmp)
-		free(tmp);
-	return ();
+ 	if (!(update_rest(parse_me, link, start_rest)))
+		return (-1);
+	if ((!found && !link->eof) || (found && !parse_me[start_rest] && !link->eof))
+		return (1);
+	return (0);
 }
 
-int		find_bn(char *str)
-{
-	int i;
+/*
+** note: will update the string at link->rest with whatever was left after the
+** position where the backslash_n was found. free old link->rest.
+**
+** RETURN: 0 if malloc failed, or 1
+*/
 
-	while (str[i])
-	{
-		if (str[i] == '\n')
-			return (i);
+int	update_rest(char *str, fd_gnl *link, int start)
+{
+	int		i;
+	char	*tmp;
+	int		new_rest;
+
+	tmp = link->rest;
+	i = 0;
+	new_rest = 0;
+	while (str[start + i])
 		i++;
+	if (!(link->rest = (char*)malloc(sizeof(char) * (i + 1))))
+		return (0);
+	link->rest[i] = '\0';
+	while (new_rest < i)
+	{
+		link->rest[new_rest] = str[start + new_rest];
+		new_rest++;
 	}
-	return (-1);
+	(tmp != NULL) ? free(tmp) : 0;
+	link->len_rest = new_rest;
+	return (1);
+}
+
+/*
+** note: function will join the line and the given string until the end of that
+** string or until a '\n' is met.
+**
+** note: fd_link->len_line is updated.
+**
+** RETURN: the position '\n' was met or the size of the string itself, or -1 if
+** a problem occured
+*/
+
+int	update_line(char **line, char *str2, fd_gnl *link)
+{
+	int		i;
+	int		j;
+	char	*tmp;
+
+	tmp = *line;
+	i = 0;
+	j = -1;
+	while (str2[i] && (str2[i] != '\n'))
+		i++;
+	if (!(*line = (char*)malloc(sizeof(char) * (link->len_line + i + 1))))
+		return (-1);
+	(*line)[link->len_line + i] = '\0';
+	while (++j < link->len_line + i)
+	{
+		if (j < link->len_line)
+			(*line)[j] = tmp[j];
+		else
+			(*line)[j] = str2[j - link->len_line];
+	}
+	link->len_line = link->len_line + i;
+	if (tmp)
+		free(tmp);
+	return (i);
 }
 
 int	main(void)
@@ -217,23 +267,21 @@ int	main(void)
 	int		fd1;
 	char	*line;
 	int	bytes_read;
+	int		result;
 
 	line = NULL;
-	if((fd1 = open("./file_lines2", O_RDONLY)) == -1)
+	if((fd1 = open("./file_lines1", O_RDONLY)) == -1)
 		return (0);
-	while (get_next_line(fd1, &line))
-		printf("%s\n", line);
-	printf("%s\n", line);
-	if (!(line = (char*)malloc(sizeof(*line) * (BUFFER_SIZE + 1))))
-		return (0);
-	while ((bytes_read = read(fd1, line, BUFFER_SIZE)) > 0)
+	while ((result = get_next_line(fd1, &line)) > 0)
 	{
-		printf("bytes_read = %d\n", bytes_read);
-		line[bytes_read] = '\0';
 		printf("%s\n", line);
+		for (int a = 0 ; a < 100000000 ; a++)
+			;
 	}
+		printf("%s\n", line);
 	get_next_line(fd1, NULL);
-	free(line);
+	if (line)
+		free(line);
 	close(fd1);
 	return (0);
 }
