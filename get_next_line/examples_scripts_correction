@@ -1,0 +1,3 @@
+make bonus MAIN="main_GNL2.c" BUFFER_SIZE="33" && ./get_next_line file_lines1
+make re MAIN="main_GNL1.c" BUFFER_SIZE="33" && ./get_next_line file_lines1
+make re MAIN="main_GNL2.c" BUFFER_SIZE="8" && ./get_next_line file_lines1

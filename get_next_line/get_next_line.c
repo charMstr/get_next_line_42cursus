@@ -6,7 +6,7 @@
 /*   By: charmstr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/17 16:14:41 by charmstr          #+#    #+#             */
-/*   Updated: 2019/11/17 17:32:14 by charmstr         ###   ########.fr       */
+/*   Updated: 2019/11/17 21:32:40 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,10 +75,10 @@ int	to_read_or_not_to_read(t_fd *fd_link, char **line)
 		if ((bytes_read = read(fd_link->fd, buf, BUFFER_SIZE)) == -1)
 			return (-1);
 		buf[bytes_read] = '\0';
-		if (bytes_read < BUFFER_SIZE)
-			fd_link->eof = 1;
 		if ((end_of_line = update_strings(line, buf, fd_link, &len_line)) < 0)
 			return (-1);
+		if (!bytes_read || (bytes_read < BUFFER_SIZE && !fd_link->len_rest))
+			fd_link->eof = 1;
 	}
 	if (fd_link->eof && (fd_link->len_rest == 0))
 		return (0);
