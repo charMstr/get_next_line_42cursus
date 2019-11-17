@@ -6,7 +6,7 @@
 /*   By: charmstr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/17 16:02:13 by charmstr          #+#    #+#             */
-/*   Updated: 2019/11/17 16:23:47 by charmstr         ###   ########.fr       */
+/*   Updated: 2019/11/17 16:42:12 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,7 @@ t_fd	*manage_link(int fd, t_fd **list, int add)
 	{
 		extra = *tracer;
 		*tracer = extra->next;
-		if (!extra->rest)
-			free(extra->rest);
+		free(extra->rest);
 		free(extra);
 	}
 	if (add)

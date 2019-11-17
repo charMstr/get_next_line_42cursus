@@ -6,15 +6,29 @@
 /*   By: charmstr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/17 16:14:41 by charmstr          #+#    #+#             */
-/*   Updated: 2019/11/17 16:23:44 by charmstr         ###   ########.fr       */
+/*   Updated: 2019/11/17 16:52:05 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
+/*
+** note: 	1st set of conditions -> added feature:
+**			if get_next_line() is called with NULL pointer it will remove/free
+**			the potentially existing link matching the given filedescriptor.
+**
+** note2:	2nd set of conditions -> called only on the very frist time (static
+**			pointer initialized to NULL).
+**
+** RETURN: -1 error occured
+**			0 EOF is reached, and there is nothing left in "fd->rest" string
+**			1 the END_LINE_CHAR was met and there is still things to be printed
+**				out.
+*/
+
 int	get_next_line(int fd, char **line)
 {
-	static t_fd	*head;
+	static t_fd		*head;
 	t_fd			*fd_link;
 	int				result;
 
@@ -130,8 +144,7 @@ int	update_line(char **line, char *str2, t_fd *link)
 			(*line)[j] = str2[j - link->len_line];
 	}
 	link->len_line = link->len_line + i;
-	if (tmp)
-		free(tmp);
+	free(tmp);
 	return (i);
 }
 
@@ -162,7 +175,7 @@ int	update_rest(char *str, t_fd *link, int start)
 		link->rest[new_rest] = str[start + new_rest];
 		new_rest++;
 	}
-	(tmp != NULL) ? free(tmp) : 0;
+	free(tmp);
 	link->len_rest = new_rest;
 	return (1);
 }
