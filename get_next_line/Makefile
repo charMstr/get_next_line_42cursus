@@ -6,7 +6,7 @@
 #    By: charmstr <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/11/11 21:40:12 by charmstr          #+#    #+#              #
-#    Updated: 2019/11/17 19:46:36 by charmstr         ###   ########.fr        #
+#    Updated: 2019/11/17 22:22:22 by charmstr         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,7 +17,7 @@ CFLAGS = -Wall -Wextra -Werror -D BUFFER_SIZE=$(BUFFER_SIZE)
 CC = gcc
 NAME = get_next_line
 .PHONY = clean fclean re all bonus
-FILE_H = ./get_next_line.h
+FILE_H = get_next_line.h get_next_line_tests_utils.h
 BONUS_FILE_H = ./get_next_line_bonus.h
 OBJ_PATH = ./objects/
 INCLUDE_PATH = ./
@@ -36,6 +36,7 @@ RANLIB_BG = \033[48;5;172m
 
 FILES = get_next_line\
 		get_next_line_utils\
+		get_next_line_tests_utils
 
 BONUS_FILES = get_next_line_bonus\
 		get_next_line_utils_bonus

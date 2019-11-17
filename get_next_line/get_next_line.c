@@ -6,18 +6,18 @@
 /*   By: charmstr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/17 16:14:41 by charmstr          #+#    #+#             */
-/*   Updated: 2019/11/17 21:32:40 by charmstr         ###   ########.fr       */
+/*   Updated: 2019/11/17 23:56:19 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
 /*
-** note: 	1st set of conditions -> added feature:
+** note1: 	2nd set of conditions -> added feature:
 **			if get_next_line() is called with NULL pointer it will remove/free
 **			the potentially existing link matching the given filedescriptor.
 **
-** note2:	2nd set of conditions -> called only on the very frist time (static
+** note2:	3rd set of conditions -> called only on the very frist time (static
 **			pointer initialized to NULL).
 **
 ** RETURN: -1 error occured
@@ -32,6 +32,8 @@ int	get_next_line(int fd, char **line)
 	t_fd			*fd_link;
 	int				result;
 
+	if (fd < 0)
+		return (-1);
 	if (!line)
 		if (!manage_link(fd, &head, REMOVE))
 			return (-1);
