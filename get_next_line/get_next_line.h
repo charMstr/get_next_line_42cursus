@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: charmstr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/15 13:28:41 by charmstr          #+#    #+#             */
-/*   Updated: 2019/11/16 16:49:16 by charmstr         ###   ########.fr       */
+/*   Created: 2019/11/17 16:14:58 by charmstr          #+#    #+#             */
+/*   Updated: 2019/11/17 16:24:25 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,25 +18,27 @@
 # include <sys/uio.h>
 # include <unistd.h>
 
-typedef struct		s_fd_gnl
+typedef struct		s_fd
 {
 	int				fd;
 	char			*rest;
 	int				len_rest;
 	int				len_line;
 	int				eof;
-	struct s_fd_gnl	*next;
-}					fd_gnl;
+	struct s_fd		*next;
+}					t_fd;
 
 # define ADD 1
 # define REMOVE 0
+# define END_LINE_CHAR '\n'
 
-fd_gnl	*manage_link(int fd, fd_gnl	**list, int add);
-fd_gnl	*new_link(int fd);
-int		get_next_line(int fd, char **line);
-int		to_read_or_not_to_read(fd_gnl *fd_link, char **line);
-int		update_strings(char **line, char *parse_me, int parse_me_len, fd_gnl *link);
-int		update_line(char **line, char *str2, fd_gnl *link);
-int		update_rest(char *str, fd_gnl *link, int start);
+t_fd				*new_link(int fd);
+t_fd				*manage_link(int fd, t_fd	**list, int add);
+int					get_next_line(int fd, char **line);
+int					to_read_or_not_to_read(t_fd *fd_link, char **line);
+int					update_strings(char **line, char *parse_me, \
+		int parse_me_len, t_fd *link);
+int					update_rest(char *str, t_fd *link, int start);
+int					update_line(char **line, char *str2, t_fd *link);
 
 #endif
