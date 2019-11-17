@@ -6,7 +6,7 @@
 /*   By: charmstr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/17 16:14:41 by charmstr          #+#    #+#             */
-/*   Updated: 2019/11/17 16:52:05 by charmstr         ###   ########.fr       */
+/*   Updated: 2019/11/17 17:32:14 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@ int	get_next_line(int fd, char **line)
 			return (-1);
 	if (!(fd_link = manage_link(fd, &head, ADD)))
 		return (-1);
-	fd_link->len_line = 0;
 	result = to_read_or_not_to_read(fd_link, line);
 	if (result <= 0)
 		manage_link(fd, &head, REMOVE);
@@ -63,11 +62,13 @@ int	to_read_or_not_to_read(t_fd *fd_link, char **line)
 	int		bytes_read;
 	char	buf[BUFFER_SIZE + 1];
 	int		end_of_line;
+	int		len_line;
 
+	len_line = 0;
 	end_of_line = 0;
 	if (fd_link->len_rest)
-		if ((end_of_line = update_strings(line, fd_link->rest, \
-						fd_link->len_rest, fd_link)) < 0)
+		if ((end_of_line = update_strings(line, fd_link->rest, fd_link, \
+						&len_line)) < 0)
 			return (-1);
 	while (!end_of_line && !fd_link->eof)
 	{
@@ -76,7 +77,7 @@ int	to_read_or_not_to_read(t_fd *fd_link, char **line)
 		buf[bytes_read] = '\0';
 		if (bytes_read < BUFFER_SIZE)
 			fd_link->eof = 1;
-		if ((end_of_line = update_strings(line, buf, bytes_read, fd_link)) < 0)
+		if ((end_of_line = update_strings(line, buf, fd_link, &len_line)) < 0)
 			return (-1);
 	}
 	if (fd_link->eof && (fd_link->len_rest == 0))
@@ -93,13 +94,13 @@ int	to_read_or_not_to_read(t_fd *fd_link, char **line)
 **			-1 if problem occured.
 */
 
-int	update_strings(char **line, char *parse_me, int parse_me_len, t_fd *link)
+int	update_strings(char **line, char *parse_me, t_fd *link, int *len_line)
 {
 	int start_rest;
 	int found;
 
 	found = 0;
-	if ((start_rest = update_line(line, parse_me, link)) == -1)
+	if ((start_rest = update_line(line, parse_me, len_line)) == -1)
 		return (-1);
 	if (parse_me[start_rest] == END_LINE_CHAR)
 	{
@@ -122,7 +123,7 @@ int	update_strings(char **line, char *parse_me, int parse_me_len, t_fd *link)
 **			or -1 if a problem occured
 */
 
-int	update_line(char **line, char *str2, t_fd *link)
+int	update_line(char **line, char *str2, int *len_line)
 {
 	int		i;
 	int		j;
@@ -133,17 +134,17 @@ int	update_line(char **line, char *str2, t_fd *link)
 	j = -1;
 	while (str2[i] && (str2[i] != END_LINE_CHAR))
 		i++;
-	if (!(*line = (char*)malloc(sizeof(char) * (link->len_line + i + 1))))
+	if (!(*line = (char*)malloc(sizeof(char) * ((*len_line) + i + 1))))
 		return (-1);
-	(*line)[link->len_line + i] = '\0';
-	while (++j < link->len_line + i)
+	(*line)[(*len_line) + i] = '\0';
+	while (++j < (*len_line) + i)
 	{
-		if (j < link->len_line)
+		if (j < *len_line)
 			(*line)[j] = tmp[j];
 		else
-			(*line)[j] = str2[j - link->len_line];
+			(*line)[j] = str2[j - (*len_line)];
 	}
-	link->len_line = link->len_line + i;
+	*len_line = (*len_line) + i;
 	free(tmp);
 	return (i);
 }
