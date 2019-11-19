@@ -6,7 +6,7 @@
 #    By: charmstr <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/11/18 18:51:52 by charmstr          #+#    #+#              #
-#    Updated: 2019/11/18 23:56:19 by charmstr         ###   ########.fr        #
+#    Updated: 2019/11/19 13:47:10 by charmstr         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,15 +14,15 @@ ifndef $(MAIN)
 MAIN = $(MAINS_PATH)main.c
 endif
 
-ifndef $(SIZE)
-SIZE = 32
+ifndef $(BUF_SIZE)
+BUF_SIZE = 32
 endif
 
-ifndef $(TEST) 
-TEST = 1
-endif
+#ifndef $(TEST) 
+#TEST = 1
+#endif
 
-CFLAGS = -g -fsanitize=address -Wall -Wextra -Werror -D BUFFER_SIZE=$(SIZE)
+CFLAGS = -g -fsanitize=address -Wall -Wextra -Werror -D BUFFER_SIZE=$(BUF_SIZE)
 CC = gcc
 NAME = get_next_line
 .PHONY = clean fclean re all bonus
@@ -71,11 +71,11 @@ all: $(NAME)
 
 $(OBJ_PATH):
 	@mkdir -p $(OBJ_PATH)
-	@echo "\t\t$(CREAT_FG)created the $(OBJECTS_BG)$(BLACK_FG)$@ $(BLACK_BG)$(CREAT_FG) repository$(CLEAR_COLOR)"
+#	@echo "\t\t$(CREAT_FG)created the $(OBJECTS_BG)$(BLACK_FG)$@ $(BLACK_BG)$(CREAT_FG) repository$(CLEAR_COLOR)"
 
 $(NAME): $(OBJ) $(FILE_H) $(OBJ_MAIN)
-	@echo "\t\t$(CREAT_FG)compiling $(NAME_BG)$(BLACK_FG)$(NAME) $(BLACK_BG)$(CREAT_FG)...$(CLEAR_COLOR)"
-	$(CC) $(CFLAGS) $(OBJ) $(OBJ_MAIN) $(IFLAGS) -o $@
+	@echo "\t\t$(CREAT_FG)compiling $(NAME_BG)$(BLACK_FG)$(NAME)$(BLACK_BG)$(CREAT_FG) with the BUFFER_SIZE= $(BLACK_FG)$(BONUS_BG) $(BUF_SIZE) $(BLACK_BG)$(CREAT_FG) and the main: $(BLACK_FG)$(BONUS_BG) $(MAIN) $(CLEAR_COLOR)"
+	@$(CC) $(CFLAGS) $(OBJ) $(OBJ_MAIN) $(IFLAGS) -o $@
 
 $(OBJ_MAIN):
 	@$(CC) $(CFLAGS) $(IFLAGS) -c $(MAIN) -o $@
@@ -91,19 +91,19 @@ $(OBJ_BONUS): $(OBJ_PATH)%.o : %.c
 	@$(CC) $(CFLAGS) $(IFLAGS) -c $< -o $@
 
 clean:
-	@echo "\t\t$(REMOVE_FG)deleting $(OBJECTS_BG)$(BLACK_FG)$(OBJ_PATH) $(BLACK_BG)$(REMOVE_FG) containing all the .o files...$(CLEAR_COLOR)" 
+#	@echo "\t\t$(REMOVE_FG)deleting $(OBJECTS_BG)$(BLACK_FG)$(OBJ_PATH) $(BLACK_BG)$(REMOVE_FG) containing all the .o files...$(CLEAR_COLOR)" 
 	@rm -rf $(OBJ_PATH)
 
 fclean: clean
-	@echo "\t\t$(REMOVE_FG)deleting $(NAME_BG)$(BLACK_FG)$(NAME) $(BLACK_BG)$(REMOVE_FG)...$(CLEAR_COLOR)" 
+#	@echo "\t\t$(REMOVE_FG)deleting $(NAME_BG)$(BLACK_FG)$(NAME) $(BLACK_BG)$(REMOVE_FG)...$(CLEAR_COLOR)" 
 	@rm -rf $(NAME)
 
-clean_name:
-	@rm -rf $(OBJ_MAIN)
+#clean_name:
+#	@rm -rf $(OBJ_MAIN)
 
-run: clean_name all 
-	@echo "\t\t$(CREAT_FG)running $(NAME_BG)$(BLACK_FG)$(NAME) $(BLACK_BG)$(CREAT_FG)  ./test_files_GNL/file_test$(BLACK_FG)$(BONUS_BG) $(TEST) $(CLEAR_COLOR)"
-	./$(NAME) test_files_GNL/file_test$(TEST)
-	cat test_files_GNL/file_test$(TEST)
+#run: clean_name all 
+#	@echo "\t\t$(CREAT_FG)running $(NAME_BG)$(BLACK_FG)$(NAME) $(BLACK_BG)$(CREAT_FG)  ./test_files_GNL/file_test$(BLACK_FG)$(BONUS_BG) $(TEST) $(CLEAR_COLOR)"
+#	./$(NAME) test_files_GNL/file_test$(TEST)
+#	cat test_files_GNL/file_test$(TEST)
 
 re: fclean all
