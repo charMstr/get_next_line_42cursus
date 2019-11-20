@@ -6,7 +6,7 @@
 /*   By: charmstr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/17 16:14:41 by charmstr          #+#    #+#             */
-/*   Updated: 2019/11/20 16:02:54 by charmstr         ###   ########.fr       */
+/*   Updated: 2019/11/20 16:25:23 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,7 @@ int	update_strings(char **line, char *parse_me, t_fd *link, int previous)
 	if (previous == 1)
 		if ((start_rest = update_line(line, parse_me, link, &found)) == -1)
 			return (-1);
-	if (parse_me[start_rest] == END_LINE_CHAR)
+	if (parse_me[start_rest] == END_LINE_CHAR && previous == 1)
 		start_rest++;
 	if (previous == 2)
 		len = update_rest(parse_me, link, start_rest, link->len_rest);

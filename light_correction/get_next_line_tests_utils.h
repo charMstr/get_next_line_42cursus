@@ -6,14 +6,12 @@
 /*   By: charmstr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/18 21:07:18 by charmstr          #+#    #+#             */
-/*   Updated: 2019/11/19 17:17:12 by charmstr         ###   ########.fr       */
+/*   Updated: 2019/11/20 16:26:45 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef GET_NEXT_LINE_TEST_UTILS_H
 # define GET_NEXT_LINE_TEST_UTILS_H
-
-# include "get_next_line.h"
 
 # include <assert.h>
 # include <stdio.h>

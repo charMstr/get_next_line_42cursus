@@ -6,15 +6,12 @@
 /*   By: charmstr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/19 16:47:28 by charmstr          #+#    #+#             */
-/*   Updated: 2019/11/19 17:48:38 by charmstr         ###   ########.fr       */
+/*   Updated: 2019/11/20 16:31:50 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include "get_next_line_tests_utils.h"
-#include <stdio.h>
-#include <fcntl.h>
-#include <unistd.h>
 
 int	main(int argc, char *argv[])
 {
@@ -46,6 +43,7 @@ int	main(int argc, char *argv[])
 			ft_putchar_fd('\n', 1);
 		}
 	}
+	close(fd_test_me);
 	free(line);
 	return (0);
 }

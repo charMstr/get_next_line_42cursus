@@ -16,11 +16,11 @@ do
 	if [ $MAIN_NAME == "mains/main.c" ]
 	then
 		echo "\n\n\tbuilding with main: ${MAIN_BG}${BLACK_FG}\t\t\t${MAIN_NAME}\t\t\t${CLEAR_COLOR}"
-		for TEST in `seq 1 5`
+		for TEST in `seq 1 8`
 		do
 			TEST_FILE=./test_files_GNL/test_file${TEST}
 			echo "\n\n\t\ttest_file is:\t\t${TEST_FILE_BG}${BLACK_FG}\t\ttest_file${TEST}\t\t${CLEAR_COLOR}"
-			for SIZE in `seq 1 6`
+			for SIZE in `seq 1 10`
 			do
 				make re MAIN=${MAIN_NAME} BUF_SIZE=${SIZE}
 				./get_next_line ${TEST_FILE}
@@ -34,6 +34,22 @@ do
 				fi
 			done
 		done
+	elif [ ${MAIN_NAME} == "mains/main_no_end_of_line_at_end.c" ]
+	then
+		echo "\n\n\tbuilding with main: ${MAIN_BG}${BLACK_FG}\t\t\t${MAIN_NAME}\t\t\t${CLEAR_COLOR}"
+		SIZE=4
+		TEST_FILE=./test_files_GNL/test_file9
+		echo "\n\n\t\ttest_file is:\t\t${TEST_FILE_BG}${BLACK_FG}\t\t${TEST_FILE}\t\t${CLEAR_COLOR} BUFFER_SIZE=${SIZE}"
+		make re MAIN=${MAIN_NAME} BUF_SIZE=${SIZE}	
+		./get_next_line ${TEST_FILE}
+		diff -u user_output ${TEST_FILE}
+		RESULT=$?
+		if [ ${RESULT} -eq 0 ]
+		then
+			echo "\033[32mGNL OK with no end of line present\033[0m"
+		else
+			echo "\033[31mGNL KO with no end of line present\033[0m"
+		fi
 	elif [ ${MAIN_NAME} == "mains/main_INPUTS_WRONG.c" ]
 	then
 		echo "\n\n\tbuilding with main: ${MAIN_BG}${BLACK_FG}\t\t\t${MAIN_NAME}\t\t\t${CLEAR_COLOR}"
@@ -49,7 +65,7 @@ do
 		else
 			echo "\033[31mGNL KO with WRONG INPUTS\033[0m"
 		fi
-	elif [ ${MAIN_NAME} == "mains/main_STDIN_FILENO.c" ]; #note , change teh != into a ==
+	elif [ ${MAIN_NAME} == "mains/main_STDIN_FILENO.c" ];
 	then
 		echo "\n\n\tbuilding with main: ${MAIN_BG}${BLACK_FG}\t\t\t${MAIN_NAME}\t\t\t${CLEAR_COLOR}"
 		SIZE=12
