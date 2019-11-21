@@ -6,7 +6,7 @@
 /*   By: charmstr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/17 16:14:41 by charmstr          #+#    #+#             */
-/*   Updated: 2019/11/20 16:25:23 by charmstr         ###   ########.fr       */
+/*   Updated: 2019/11/21 17:53:32 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 ** RETURN: -1 error occured
 **			0 EOF is reached, and there is nothing left in "fd->rest" string
 **			1 the END_LINE_CHAR was met and there is still things to be printed
-**				out.
+**			out.
 */
 
 int	get_next_line(int fd, char **line)
@@ -37,6 +37,7 @@ int	get_next_line(int fd, char **line)
 	if (!line)
 		if (!manage_link(fd, &head, REMOVE))
 			return (-1);
+	*line = NULL;
 	if (!head)
 		if (!(head = new_link(fd)))
 			return (-1);
@@ -50,11 +51,12 @@ int	get_next_line(int fd, char **line)
 }
 
 /*
-** man:		should read until (an END_LINE_CHAR is reached and is not at the
-**			end of the buffer) OR (EOF is reachedi). line is updated until the
-**			first END_LINE_CHARR is met.
+** man:		should read until [an END_LINE_CHAR is reached and is not at the
+**			end of the buffer] OR [EOF is reached]. line is updated until the
+**			first END_LINE_CHARR is met. the rest including that first '\n' is
+**			placed into fd_link->rest.
 **
-** note:	whatever followed the first END_LINE_CHAR is stored into fd->rest.
+** note:	the rest in stored into fd->rest, including the first END_LINE_CHAR
 **
 ** RETURN:	-1	if a problem occured
 **			0	if EOF reached and there is nothing left in link->rest string.
@@ -69,7 +71,7 @@ int	to_read_or_not_to_read(t_fd *link, char **line)
 
 	keep_going = 1;
 	if (link->len_rest)
-		keep_going = update_strings(line, link->rest, link, 1);
+		keep_going = update_strings(line, (link->rest) + 1, link, 1);
 	while (keep_going && !link->eof)
 	{
 		if ((bytes_read = read(link->fd, buf, BUFFER_SIZE)) == -1)
@@ -112,8 +114,6 @@ int	update_strings(char **line, char *parse_me, t_fd *link, int previous)
 	if (previous == 1)
 		if ((start_rest = update_line(line, parse_me, link, &found)) == -1)
 			return (-1);
-	if (parse_me[start_rest] == END_LINE_CHAR && previous == 1)
-		start_rest++;
 	if (previous == 2)
 		len = update_rest(parse_me, link, start_rest, link->len_rest);
 	else
@@ -127,7 +127,7 @@ int	update_strings(char **line, char *parse_me, t_fd *link, int previous)
 
 /*
 ** note:	this function will join the line and the given string until the end
-**			of that string or until a END_LINE_CHAR is met.
+**M8			of that string or until a END_LINE_CHAR is met.
 **
 ** note:	fd_link->len_line is updated.
 **
@@ -147,8 +147,7 @@ int	update_line(char **line, char *str2, t_fd *link, int *found)
 	j = -1;
 	while (str2[i] && (str2[i] != END_LINE_CHAR))
 		i++;
-	if (str2[i] == END_LINE_CHAR)
-		*found = 1;
+	*found = (str2[i] == END_LINE_CHAR) ? 1 : 0;
 	if (!(*line = (char*)malloc(sizeof(char) * (link->len_line + i + 1))))
 		return (-1);
 	(*line)[link->len_line + i] = '\0';
@@ -160,13 +159,15 @@ int	update_line(char **line, char *str2, t_fd *link, int *found)
 			(*line)[j] = str2[j - link->len_line];
 	}
 	link->len_line = link->len_line + i;
-	free(tmp);
+	if (tmp)
+		free(tmp);
 	return (i);
 }
 
 /*
-** note: 	will update the string link->rest with whatever was left after the
-**			position where the END_LINE_CHAR was found. free old link->rest.
+** note: 	will update the string link->rest with whatever was left starting
+**			at the position where the END_LINE_CHAR was found. free old
+**			link->rest.
 **
 ** RETURN:	0 if malloc failed
 **			or the len of the added_rest
