@@ -6,7 +6,7 @@
 /*   By: charmstr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/17 16:14:41 by charmstr          #+#    #+#             */
-/*   Updated: 2019/11/21 17:53:32 by charmstr         ###   ########.fr       */
+/*   Updated: 2019/11/21 18:23:58 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,8 @@ int	to_read_or_not_to_read(t_fd *link, char **line)
 **			1 if no END_LINE_CHAR was found
 */
 
-int	update_strings(char **line, char *parse_me, t_fd *link, int previous)
+int	update_strings(char **line, char *parse_me, t_fd *link, \
+		int previous)
 {
 	int start_rest;
 	int found;
