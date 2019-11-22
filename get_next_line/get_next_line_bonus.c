@@ -6,7 +6,7 @@
 /*   By: charmstr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/17 16:30:55 by charmstr          #+#    #+#             */
-/*   Updated: 2019/11/21 19:17:52 by charmstr         ###   ########.fr       */
+/*   Updated: 2019/11/22 03:10:28 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int	get_next_line(int fd, char **line)
 	t_fd			*fd_link;
 	int				result;
 
-	if (fd < 0 || BUFFER_SIZE == 0)
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (-1);
 	if (!line)
 		if (!manage_link(fd, &head, REMOVE))
