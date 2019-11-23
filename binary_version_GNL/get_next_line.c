@@ -6,14 +6,33 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/22 22:29:55 by charmstr          #+#    #+#             */
-/*   Updated: 2019/11/22 22:29:58 by charmstr         ###   ########.fr       */
+/*   Updated: 2019/11/23 06:29:37 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include "GNL_TESTS.h"		///to be removed
 
-void	display_struct(t_fd *link, char *line, int result);
+/*
+** note1: 	2nd set of conditions -> added feature:
+**			if get_next_line() is called with NULL pointer it will remove/free
+**			the potentially existing link matching the given filedescriptor.
+**			therefore you can only read the first few lines and free the memory
+**			then close the fd.
+**
+** note2:	this GNL is able to read binary files as it will return 2 if we
+**			encouter a '\0' that is before the very end of the file.
+**			we can either decide to add a '\n', or just print the empty string
+**			alone, or even stop reding.
+**
+** note3:	3rd set of conditions -> called only on the very frist time (static
+**			pointer initialized to NULL). Head of a linked list, this allows
+**			to read read on different file descriptors at the same time.
+**
+** RETURN: -1 error occured
+**			0 EOF is reached, and there is nothing left in "fd->rest" string
+**			1 the END_LINE_CHAR was met and there is still things to process.
+**			2 an '\0' was met in a binary file, and EOF was not reached yet.
+*/
 
 int	get_next_line(int fd, char **line)
 {
@@ -38,30 +57,16 @@ int	get_next_line(int fd, char **line)
 	result = to_read_or_not_to_read(fd_link, line);
 	if (result <= 0)
 		manage_link(fd, &head, REMOVE);
-//	display_struct(fd_link, *line, result);
-//	for (int i = 0; i < 100000000; i++) ;
 	return (result);
 }
 
-void	display_struct(t_fd *link, char *line, int result)
-{
-	my_ft_putstr_fd("\n-------------------------\n", 1);
-	my_ft_putstr_fd("line is: |", 1);
-	my_ft_putstr_fd(line, 1);
-	my_ft_putstr_fd("|\nlen_line is: ", 1);
-	my_ft_putnbr_fd(link->len_line, 1);
-	my_ft_putstr_fd("\nrest is: |", 1);
-	my_ft_putstr_fd(link->rest, 1);
-	my_ft_putstr_fd("|\nlen_rest is: ", 1);
-	my_ft_putnbr_fd(link->len_rest, 1);
-	my_ft_putstr_fd("\nEOF is: ", 1);
-	my_ft_putnbr_fd(link->eof, 1);
-	my_ft_putstr_fd("\nb_zero is: ", 1);
-	my_ft_putnbr_fd(link->b_zero, 1);
-	my_ft_putstr_fd("\ncoming out of GNL call: result is:", 1);
-	my_ft_putnbr_fd(result, 1);
-	my_ft_putstr_fd("\n-------------------------\n\n\n", 1);
-}
+/*
+** note:	in this function we put whats read in line, and if a END_CHAR_LINE
+**			is met we then place the rest in the string "rest", matching the
+**			given filedescriptor (link->rest).
+**
+** RETURN:	as above.
+*/
 
 int	to_read_or_not_to_read(t_fd *link, char **line)
 {
@@ -93,10 +98,12 @@ int	to_read_or_not_to_read(t_fd *link, char **line)
 ** note:	this function will be called if there was some left-overs in
 **			fd->rest, from the previous call to get_next_line on that fd.
 **
-**			if yes it will update both line and rest starting at + 1 index..
+**			if yes it will update both line and rest starting at + 1 index,
+**			assuming that if there is a rest its because we met a character we
+**			want to now skip.
 **
 ** RETURN:	BUFFER_SIZE to validate the next loop condition if length of rest
-**					is now 0
+**				is now 0.
 **			0 if there is still characters in rest string.
 **			-1 if a problem occured.
 */
@@ -117,7 +124,7 @@ int	enter_next_loop(char **line, t_fd *link)
 
 /*
 ** note:	this function will update line, and if a binary_zero value is found
-**			before the lenght of bytes toi be read, then the fd->b_zero flag is
+**			before the lenght of bytes to be read, then the fd->b_zero flag is
 **			activated.
 **
 ** RETURN:	the position where the END_LINE_CHAR or '\0' was found.
