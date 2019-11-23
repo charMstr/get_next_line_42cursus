@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/22 22:29:55 by charmstr          #+#    #+#             */
-/*   Updated: 2019/11/23 07:09:55 by charmstr         ###   ########.fr       */
+/*   Updated: 2019/11/23 23:36:37 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,10 @@
 ** note2:	this GNL is able to read binary files as it will return 2 if we
 **			encouter a '\0' that is before the very end of the file.
 **			we can either decide to add a '\n', or just print the empty string
-**			alone, or even stop reding.
+**			alone, or even stop reding. if you want to print the line including
+**			the backslash zero in case gnl returns 2: you will have to call
+**			a ft_putstr_fd  modified, that will write len+1 characters.
+**
 **
 ** note3:	3rd set of conditions -> called only on the very frist time (static
 **			pointer initialized to NULL). Head of a linked list, this allows

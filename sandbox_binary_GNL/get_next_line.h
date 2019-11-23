@@ -6,7 +6,7 @@
 /*   By: charmstr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/17 16:14:58 by charmstr          #+#    #+#             */
-/*   Updated: 2019/11/23 08:05:52 by charmstr         ###   ########.fr       */
+/*   Updated: 2019/11/23 06:36:41 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,9 @@ typedef struct		s_fd
 
 # define END_LINE_CHAR '\n'
 
-//# ifndef BUFFER_SIZE
-//#  define BUFFER_SIZE 32
-//# endif
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 32
+# endif
 
 t_fd				*new_link(int fd);
 t_fd				*manage_link(int fd, t_fd	**list, int add);

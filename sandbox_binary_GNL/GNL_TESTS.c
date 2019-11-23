@@ -6,7 +6,7 @@
 /*   By: charmstr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/22 03:54:29 by charmstr          #+#    #+#             */
-/*   Updated: 2019/11/23 07:45:44 by charmstr         ###   ########.fr       */
+/*   Updated: 2019/11/23 23:29:51 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,4 +70,15 @@ int	ft_isprint(int c)
 		return (1);
 	else
 		return (0);
+}
+
+void my_ft_putstr_fd_bzero(char *str, int fd)
+{
+	int i;
+
+	i = 0;
+	while (str[i])
+		i++;
+	i += 1;
+	write(fd, str, i);
 }
