@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/22 22:29:55 by charmstr          #+#    #+#             */
-/*   Updated: 2019/11/23 07:01:21 by charmstr         ###   ########.fr       */
+/*   Updated: 2019/11/23 07:09:55 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,6 @@ int	to_read_or_not_to_read(t_fd *link, char **line)
 	if (link->len_rest)
 		if ((position = enter_next_loop(line, link)) == -1)
 			return (-1);
-	//while (position == BUFFER_SIZE && !link->eof && !link->b_zero)
 	while ((position == BUFFER_SIZE) && !(link->flags & (B_ZERO | E_O_F)))
 	{
 		if ((bytes_read = read(link->fd, buf, BUFFER_SIZE)) == -1)
@@ -115,10 +114,10 @@ int	enter_next_loop(char **line, t_fd *link)
 {
 	int	position;
 
-	if ((position = update_line(line, link, link->rest + 1 , \
+	if ((position = update_line(line, link, link->rest + 1, \
 					link->len_rest - 1)) == -1)
 		return (-1);
-	if (!update_rest(link->rest + 1, position , link->len_rest - 1 , link))
+	if (!update_rest(link->rest + 1, position, link->len_rest - 1, link))
 		return (-1);
 	if (link->len_rest == 0)
 		return (BUFFER_SIZE);
@@ -144,7 +143,7 @@ int	update_line(char **line, t_fd *link, const char *src, int len_src)
 	j = -1;
 	while (++i < len_src)
 		if (!src[i] || src[i] == END_LINE_CHAR)
-			break;
+			break ;
 	link->flags |= (src[i] == '\0' && i < len_src) ? B_ZERO : 0x0;
 	if (!(*line = (char*)malloc(sizeof(char) * (link->len_line + i + 1))))
 		return (-1);
@@ -183,7 +182,7 @@ int	update_rest(const char *str, int start, int len_str, t_fd *link)
 		return (0);
 	link->rest[len] = '\0';
 	while (++i < len)
-			link->rest[i] = str[start + i];
+		link->rest[i] = str[start + i];
 	link->len_rest = len;
 	free(tmp);
 	return (1);
