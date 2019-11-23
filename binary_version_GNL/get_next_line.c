@@ -6,13 +6,15 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/22 22:29:55 by charmstr          #+#    #+#             */
-/*   Updated: 2019/11/23 06:29:37 by charmstr         ###   ########.fr       */
+/*   Updated: 2019/11/23 07:01:21 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
 /*
+** note0: 	see #define in header if you want to change the END_LINE_CHAR
+**
 ** note1: 	2nd set of conditions -> added feature:
 **			if get_next_line() is called with NULL pointer it will remove/free
 **			the potentially existing link matching the given filedescriptor.
@@ -52,7 +54,7 @@ int	get_next_line(int fd, char **line)
 	if (!(fd_link = manage_link(fd, &head, ADD)))
 		return (-1);
 	fd_link->len_line = 0;
-	fd_link->b_zero = 0;
+	fd_link->flags &= ~B_ZERO;
 	*line = 0;
 	result = to_read_or_not_to_read(fd_link, line);
 	if (result <= 0)
@@ -78,20 +80,21 @@ int	to_read_or_not_to_read(t_fd *link, char **line)
 	if (link->len_rest)
 		if ((position = enter_next_loop(line, link)) == -1)
 			return (-1);
-	while (position == BUFFER_SIZE && !link->eof && !link->b_zero)
+	//while (position == BUFFER_SIZE && !link->eof && !link->b_zero)
+	while ((position == BUFFER_SIZE) && !(link->flags & (B_ZERO | E_O_F)))
 	{
 		if ((bytes_read = read(link->fd, buf, BUFFER_SIZE)) == -1)
 			return (-1);
 		if (bytes_read < BUFFER_SIZE)
-			link->eof = 1;
+			link->flags |= E_O_F;
 		if ((position = update_line(line, link, buf, bytes_read)) == -1)
 			return (-1);
 		if (!update_rest(buf, position, bytes_read, link))
 			return (-1);
 	}
-	if (link->eof && !link->len_rest)
+	if (((link->flags & E_O_F) == E_O_F) && !link->len_rest)
 		return (0);
-	return (link->b_zero == 1) ? 2 : 1;
+	return ((link->flags & B_ZERO) == B_ZERO) ? 2 : 1;
 }
 
 /*
@@ -142,7 +145,7 @@ int	update_line(char **line, t_fd *link, const char *src, int len_src)
 	while (++i < len_src)
 		if (!src[i] || src[i] == END_LINE_CHAR)
 			break;
-	link->b_zero = (src[i] == '\0' && i < len_src) ? 1 : 0;
+	link->flags |= (src[i] == '\0' && i < len_src) ? B_ZERO : 0x0;
 	if (!(*line = (char*)malloc(sizeof(char) * (link->len_line + i + 1))))
 		return (-1);
 	(*line)[link->len_line + i] = '\0';

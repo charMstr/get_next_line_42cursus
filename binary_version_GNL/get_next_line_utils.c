@@ -6,7 +6,7 @@
 /*   By: charmstr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/17 16:02:13 by charmstr          #+#    #+#             */
-/*   Updated: 2019/11/22 17:30:50 by charmstr         ###   ########.fr       */
+/*   Updated: 2019/11/23 06:37:15 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,7 @@ t_fd	*new_link(int fd)
 	new_link->rest = NULL;
 	new_link->len_rest = 0;
 	new_link->len_line = 0;
-	new_link->b_zero = 0;
-	new_link->eof = 0;
+	new_link->flags = 0;
 	new_link->next = NULL;
 	return (new_link);
 }

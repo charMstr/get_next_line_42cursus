@@ -6,7 +6,7 @@
 /*   By: charmstr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/17 16:14:58 by charmstr          #+#    #+#             */
-/*   Updated: 2019/11/22 22:32:57 by charmstr         ###   ########.fr       */
+/*   Updated: 2019/11/23 06:36:41 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,13 +24,14 @@ typedef struct		s_fd
 	char			*rest;
 	int				len_rest;
 	int				len_line;
-	int				b_zero;
-	int				eof;
+	char			flags;
 	struct s_fd		*next;
 }					t_fd;
 
 # define ADD 1
 # define REMOVE 0
+# define E_O_F (1 << 0)
+# define B_ZERO (1 << 1)
 
 # define END_LINE_CHAR '\n'
 
