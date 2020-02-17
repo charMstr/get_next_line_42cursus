@@ -6,7 +6,7 @@
 /*   By: charmstr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/17 16:14:58 by charmstr          #+#    #+#             */
-/*   Updated: 2019/11/23 06:36:41 by charmstr         ###   ########.fr       */
+/*   Updated: 2020/02/17 23:55:30 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,8 @@ typedef struct		s_fd
 
 # define ADD 1
 # define REMOVE 0
-# define E_O_F (1 << 0)
-# define B_ZERO (1 << 1)
+# define E_O_F 0x1
+# define B_ZERO 0x2
 
 # define END_LINE_CHAR '\n'
 

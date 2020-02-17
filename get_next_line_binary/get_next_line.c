@@ -6,7 +6,7 @@
 /*   By: charmstr <charmstr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/22 22:29:55 by charmstr          #+#    #+#             */
-/*   Updated: 2019/11/23 23:36:37 by charmstr         ###   ########.fr       */
+/*   Updated: 2020/02/17 23:44:32 by charmstr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,19 +19,22 @@
 **			if get_next_line() is called with NULL pointer it will remove/free
 **			the potentially existing link matching the given filedescriptor.
 **			therefore you can only read the first few lines and free the memory
-**			then close the fd.
+**			then close the fd if you want.
 **
 ** note2:	this GNL is able to read binary files as it will return 2 if we
 **			encouter a '\0' that is before the very end of the file.
 **			we can either decide to add a '\n', or just print the empty string
 **			alone, or even stop reding. if you want to print the line including
 **			the backslash zero in case gnl returns 2: you will have to call
-**			a ft_putstr_fd  modified, that will write len+1 characters.
-**
+**			a ft_putstr_fd  modified, that will write len+1 characters
+**			(including the backslash 0)
 **
 ** note3:	3rd set of conditions -> called only on the very frist time (static
 **			pointer initialized to NULL). Head of a linked list, this allows
-**			to read read on different file descriptors at the same time.
+**			to read on different file descriptors at the same time.
+**
+** note4:	the gnl reads in a loop until EOF, if reading the stdin, it will
+**			always read at least one character ('\n'), unless we hit ctrl^D.
 **
 ** RETURN: -1 error occured
 **			0 EOF is reached, and there is nothing left in "fd->rest" string
@@ -79,15 +82,14 @@ int	to_read_or_not_to_read(t_fd *link, char **line)
 	char	buf[BUFFER_SIZE + 1];
 	int		position;
 
-	position = BUFFER_SIZE;
 	if (link->len_rest)
-		if ((position = enter_next_loop(line, link)) == -1)
+		if ((enter_next_loop(line, link)) == -1)
 			return (-1);
-	while ((position == BUFFER_SIZE) && !(link->flags & (B_ZERO | E_O_F)))
+	while (!link->len_rest && !(link->flags & (B_ZERO | E_O_F)))
 	{
 		if ((bytes_read = read(link->fd, buf, BUFFER_SIZE)) == -1)
 			return (-1);
-		if (bytes_read < BUFFER_SIZE)
+		if (bytes_read == 0)
 			link->flags |= E_O_F;
 		if ((position = update_line(line, link, buf, bytes_read)) == -1)
 			return (-1);
@@ -122,8 +124,6 @@ int	enter_next_loop(char **line, t_fd *link)
 		return (-1);
 	if (!update_rest(link->rest + 1, position, link->len_rest - 1, link))
 		return (-1);
-	if (link->len_rest == 0)
-		return (BUFFER_SIZE);
 	return (0);
 }
 
